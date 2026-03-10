@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LAN PC Monitor</title>
+    <link rel="stylesheet" href="{{ url_for('static', path='style.css') }}">
+</head>
+<body>
+    <div class="page-shell">
+        <header class="hero">
+            <div>
+                <p class="eyebrow">LAN PC Monitor</p>
+                <h1 id="hostname">Loading monitored PC...</h1>
+                <p class="hero-copy">
+                    Live system health for the monitored workstation. The page updates automatically without reload.
+                </p>
+            </div>
+            <div class="hero-side">
+                <div class="status-pill" id="status-pill" data-tone="neutral">
+                    <span class="status-dot"></span>
+                    <span id="online_status">Connecting...</span>
+                </div>
+                <div class="link-panel">
+                    <span class="panel-label">Dashboard link</span>
+                    <a id="dashboard-link" href="{{ dashboard_url }}" target="_blank" rel="noreferrer">{{ dashboard_url }}</a>
+                    <span class="panel-note" id="connection_mode">Waiting for live data...</span>
+                </div>
+            </div>
+        </header>
+
+        <main class="dashboard-grid">
+            <section class="card span-3" id="cpu-card" data-tone="neutral">
+                <div class="card-header">
+                    <h2>CPU Usage</h2>
+                    <span class="badge" id="cpu_temp">Temp: --</span>
+                </div>
+                <div class="metric-xl"><span id="cpu_percent">--</span><small>%</small></div>
+                <p class="muted" id="os_name">--</p>
+            </section>
+
+            <section class="card span-3" id="ram-card" data-tone="neutral">
+                <div class="card-header">
+                    <h2>Memory</h2>
+                    <span class="badge">RAM</span>
+                </div>
+                <div class="metric-xl"><span id="ram_percent">--</span><small>%</small></div>
+                <p class="muted" id="ram_used_total">--</p>
+            </section>
+
+            <section class="card span-3" id="disk-card" data-tone="neutral">
+                <div class="card-header">
+                    <h2>Total Disk</h2>
+                    <span class="badge">Drives</span>
+                </div>
+                <div class="metric-xl"><span id="disk_usage_percent">--</span><small>%</small></div>
+                <p class="muted" id="disk_total_summary">--</p>
+            </section>
+
+            <section class="card span-3 accent-card">
+                <div class="card-header">
+                    <h2>System Identity</h2>
+                    <span class="badge" id="username">--</span>
+                </div>
+                <dl class="meta-list">
+                    <div>
+                        <dt>PC Name</dt>
+                        <dd id="pc_name">--</dd>
+                    </div>
+                    <div>
+                        <dt>LAN IP</dt>
+                        <dd id="ip_address">--</dd>
+                    </div>
+                    <div>
+                        <dt>Last Update</dt>
+                        <dd id="last_updated">--</dd>
+                    </div>
+                </dl>
+            </section>
+
+            <section class="card span-4">
+                <div class="card-header">
+                    <h2>Network Speed</h2>
+                    <span class="badge">Live</span>
+                </div>
+                <div class="split-metrics">
+                    <div>
+                        <span class="metric-label">Download</span>
+                        <div class="metric-lg"><span id="download_mbps">--</span><small>Mbps</small></div>
+                    </div>
+                    <div>
+                        <span class="metric-label">Upload</span>
+                        <div class="metric-lg"><span id="upload_mbps">--</span><small>Mbps</small></div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="card span-4">
+                <div class="card-header">
+                    <h2>Total Traffic</h2>
+                    <span class="badge" id="network_scope">Counters</span>
+                </div>
+                <div class="split-metrics">
+                    <div>
+                        <span class="metric-label">Received</span>
+                        <div class="metric-md" id="bytes_recv">--</div>
+                    </div>
+                    <div>
+                        <span class="metric-label">Sent</span>
+                        <div class="metric-md" id="bytes_sent">--</div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="card span-4">
+                <div class="card-header">
+                    <h2>Runtime</h2>
+                    <span class="badge">Current</span>
+                </div>
+                <div class="split-metrics runtime-grid">
+                    <div>
+                        <span class="metric-label">Uptime</span>
+                        <div class="metric-md" id="uptime_human">--</div>
+                    </div>
+                    <div>
+                        <span class="metric-label">Available RAM</span>
+                        <div class="metric-md" id="ram_available">--</div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="card span-12">
+                <div class="card-header">
+                    <h2>Network Link Details</h2>
+                    <span class="badge" id="network_state_badge">Adapter status</span>
+                </div>
+                <div class="network-grid">
+                    <div class="info-tile">
+                        <span class="metric-label">Active Adapter</span>
+                        <strong id="interface_name">--</strong>
+                    </div>
+                    <div class="info-tile">
+                        <span class="metric-label">Connection Type</span>
+                        <strong id="connection_type">--</strong>
+                    </div>
+                    <div class="info-tile">
+                        <span class="metric-label">Connection State</span>
+                        <strong id="connection_state">--</strong>
+                    </div>
+                    <div class="info-tile">
+                        <span class="metric-label">Link Speed</span>
+                        <strong id="link_speed">--</strong>
+                    </div>
+                    <div class="info-tile">
+                        <span class="metric-label">Subnet Mask</span>
+                        <strong id="subnet_mask">--</strong>
+                    </div>
+                    <div class="info-tile">
+                        <span class="metric-label">Broadcast IP</span>
+                        <strong id="broadcast_ip">--</strong>
+                    </div>
+                    <div class="info-tile">
+                        <span class="metric-label">MAC Address</span>
+                        <strong id="mac_address">--</strong>
+                    </div>
+                    <div class="info-tile">
+                        <span class="metric-label">MTU</span>
+                        <strong id="mtu_value">--</strong>
+                    </div>
+                    <div class="info-tile">
+                        <span class="metric-label">Duplex</span>
+                        <strong id="duplex_value">--</strong>
+                    </div>
+                    <div class="info-tile">
+                        <span class="metric-label">Packets</span>
+                        <strong id="packets_summary">--</strong>
+                    </div>
+                    <div class="info-tile">
+                        <span class="metric-label">Errors / Drops</span>
+                        <strong id="errors_summary">--</strong>
+                    </div>
+                </div>
+            </section>
+
+            <section class="card span-12">
+                <div class="card-header">
+                    <h2>Drive Usage</h2>
+                    <span class="badge">Live storage snapshot</span>
+                </div>
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Drive</th>
+                                <th>Used / Total</th>
+                                <th>Free</th>
+                                <th>Usage</th>
+                            </tr>
+                        </thead>
+                        <tbody id="disks_body">
+                            <tr>
+                                <td colspan="4" class="empty-state">Waiting for disk data...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        window.MONITOR_CONFIG = {
+            refreshSeconds: {{ refresh_seconds | tojson }}
+        };
+    </script>
+    <script src="{{ url_for('static', path='app.js') }}"></script>
+</body>
+</html>
