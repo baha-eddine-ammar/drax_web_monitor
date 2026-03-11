@@ -3,7 +3,7 @@ setlocal EnableExtensions EnableDelayedExpansion
 cd /d "%~dp0"
 
 set "APP_NAME=PC Monitor Server"
-set "APP_EXE=%~dp0PCMonitorServer.exe"
+set "APP_EXE_NAME=PCMonitorServer.exe"
 set "PORT=5000"
 set "FOUND_PORT="
 set "ACTIVE_PID="
@@ -16,14 +16,7 @@ echo %APP_NAME%
 echo ================================================================
 echo.
 
-if not exist "%APP_EXE%" (
-    echo The packaged application file was not found:
-    echo %APP_EXE%
-    echo.
-    echo If you are using the source project, run build.bat first.
-    pause
-    exit /b 1
-)
+if not exist "%APP_EXE_NAME%" goto :missing_exe
 
 if defined ACTIVE_PID (
     echo Port %PORT% is already in use by PID %ACTIVE_PID%.
@@ -38,7 +31,7 @@ if defined ACTIVE_PID (
 
 echo Launching the packaged monitoring server...
 echo.
-"%APP_EXE%"
+"%APP_EXE_NAME%"
 if errorlevel 1 goto :runtime_failed
 exit /b 0
 
@@ -58,6 +51,14 @@ for /f "tokens=5" %%P in ('netstat -ano ^| findstr /r /c:":%PORT% .*LISTENING"')
 )
 exit /b 0
 
+:missing_exe
+echo The packaged application file was not found:
+echo %~dp0%APP_EXE_NAME%
+echo.
+echo If you are using the source project, run build.bat first.
+pause
+exit /b 1
+
 :runtime_failed
 echo.
 echo %APP_NAME% stopped unexpectedly.
@@ -70,4 +71,3 @@ echo.
 echo Use stop_app.bat if you need to stop an older instance first.
 pause
 exit /b 1
-

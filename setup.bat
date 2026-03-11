@@ -3,7 +3,8 @@ setlocal EnableExtensions EnableDelayedExpansion
 cd /d "%~dp0"
 
 set "APP_NAME=PC Monitor Server"
-set "APP_EXE=%~dp0PCMonitorServer.exe"
+set "APP_EXE_NAME=PCMonitorServer.exe"
+set "APP_EXE_PATH=%~dp0PCMonitorServer.exe"
 set "PORT=5000"
 set "FOUND_PORT="
 set "FIREWALL_RULE=PC Monitor Dashboard Port 5000"
@@ -16,14 +17,7 @@ echo %APP_NAME% Setup
 echo ================================================================
 echo.
 
-if not exist "%APP_EXE%" (
-    echo The packaged application file was not found:
-    echo %APP_EXE%
-    echo.
-    echo If you are preparing the release, run build.bat first.
-    pause
-    exit /b 1
-)
+if not exist "%APP_EXE_NAME%" goto :missing_exe
 
 call :configure_firewall
 call :create_shortcuts
@@ -43,6 +37,14 @@ if exist "config.json" (
 )
 if defined FOUND_PORT set "PORT=%FOUND_PORT%"
 exit /b 0
+
+:missing_exe
+echo The packaged application file was not found:
+echo %APP_EXE_PATH%
+echo.
+echo If you are preparing the release, run build.bat first.
+pause
+exit /b 1
 
 :configure_firewall
 echo Checking Windows Firewall rule for port %PORT%...
@@ -80,13 +82,13 @@ set "STOP_SHORTCUT=%USERPROFILE%\Desktop\Stop PC Monitor Server.lnk"
 >> "%SHORTCUT_SCRIPT%" echo runLink.TargetPath = "%~dp0run_app.bat"
 >> "%SHORTCUT_SCRIPT%" echo runLink.WorkingDirectory = "%~dp0"
 >> "%SHORTCUT_SCRIPT%" echo runLink.Description = "Start the LAN PC monitor server"
->> "%SHORTCUT_SCRIPT%" echo runLink.IconLocation = "%APP_EXE%,0"
+>> "%SHORTCUT_SCRIPT%" echo runLink.IconLocation = "%APP_EXE_PATH%,0"
 >> "%SHORTCUT_SCRIPT%" echo runLink.Save
 >> "%SHORTCUT_SCRIPT%" echo Set stopLink = shell.CreateShortcut("%STOP_SHORTCUT%")
 >> "%SHORTCUT_SCRIPT%" echo stopLink.TargetPath = "%~dp0stop_app.bat"
 >> "%SHORTCUT_SCRIPT%" echo stopLink.WorkingDirectory = "%~dp0"
 >> "%SHORTCUT_SCRIPT%" echo stopLink.Description = "Stop the LAN PC monitor server"
->> "%SHORTCUT_SCRIPT%" echo stopLink.IconLocation = "%APP_EXE%,0"
+>> "%SHORTCUT_SCRIPT%" echo stopLink.IconLocation = "%APP_EXE_PATH%,0"
 >> "%SHORTCUT_SCRIPT%" echo stopLink.Save
 
 cscript //nologo "%SHORTCUT_SCRIPT%" >nul 2>&1
@@ -94,4 +96,3 @@ del /q "%SHORTCUT_SCRIPT%" >nul 2>&1
 
 echo Desktop shortcuts created.
 exit /b 0
-
